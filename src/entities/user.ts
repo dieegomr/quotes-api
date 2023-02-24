@@ -3,9 +3,10 @@ import {
   InvalidEmailError,
   InvalidNameError,
   InvalidPasswordError,
+  InvalidQuoteContentError,
 } from './errors';
-import { Name, Password, UserProfile } from '../entities';
-import { Email } from './email';
+import { Name, Password, Quote, UserProfile } from '../entities';
+import { Email } from '../entities';
 
 type CreateUserData = {
   id: string;
@@ -81,5 +82,16 @@ export class User {
       email: this._email.value,
     };
     return userProfile;
+  }
+
+  createQuote(content: string): Either<InvalidQuoteContentError, Quote> {
+    const quoteOrError: Either<InvalidQuoteContentError, Quote> = Quote.create(
+      content,
+      this
+    );
+
+    if (quoteOrError.isLeft()) return left(quoteOrError.value);
+
+    return right(quoteOrError.value);
   }
 }
