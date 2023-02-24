@@ -1,5 +1,6 @@
 import { Either, left, right } from '../shared';
 import {
+  DifferentAuthorError,
   InvalidEmailError,
   InvalidNameError,
   InvalidPasswordError,
@@ -7,6 +8,7 @@ import {
 } from './errors';
 import { Name, Password, Quote, UserProfile } from '../entities';
 import { Email } from '../entities';
+import { Content } from './content';
 
 type CreateUserData = {
   id: string;
@@ -22,6 +24,10 @@ export class User {
     private _password: Password,
     private _email: Email
   ) {}
+
+  get id() {
+    return this._id;
+  }
 
   static create(
     createUserData: CreateUserData
@@ -85,10 +91,26 @@ export class User {
   }
 
   createQuote(content: string): Either<InvalidQuoteContentError, Quote> {
-    const quoteOrError: Either<InvalidQuoteContentError, Quote> = Quote.create(
-      content,
-      this
-    );
+    const quoteOrError = Quote.create(content, this);
+
+    if (quoteOrError.isLeft()) return left(quoteOrError.value);
+
+    return right(quoteOrError.value);
+  }
+
+  canQuoteBeDeleted(quote: Quote): boolean {
+    if (quote.author.id === this.id) return true;
+
+    return false;
+  }
+
+  editQuoteContent(
+    quote: Quote,
+    content: string
+  ): Either<InvalidQuoteContentError | DifferentAuthorError, Quote> {
+    if (quote.author.id !== this.id) return left(new DifferentAuthorError());
+
+    const quoteOrError = quote.editContent(content);
 
     if (quoteOrError.isLeft()) return left(quoteOrError.value);
 
