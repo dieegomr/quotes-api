@@ -116,4 +116,8 @@ export class User {
 
     return right(quoteOrError.value);
   }
+
+  canIDeleteCurentAccount(currentAccountId: string): boolean {
+    return currentAccountId === this._id ? true : false;
+  }
 }
