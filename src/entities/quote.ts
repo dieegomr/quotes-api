@@ -39,4 +39,8 @@ export class Quote {
 
     return right(this);
   }
+
+  canBeDeleted(currentUserId: string): boolean {
+    return currentUserId === this._author.id ? true : false;
+  }
 }
