@@ -1,5 +1,5 @@
 export class InvalidNameError extends Error {
-  constructor(name: string) {
+  constructor() {
     super('Name is invalid.');
   }
 }
