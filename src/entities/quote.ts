@@ -10,6 +10,10 @@ export class Quote {
     private _author: User
   ) {}
 
+  get author() {
+    return this._author;
+  }
+
   static create(
     content: string,
     author: User
@@ -24,5 +28,15 @@ export class Quote {
     const usersWhoLiked: string[] = [];
 
     return right(new Quote(contentObj, usersWhoLiked, author));
+  }
+
+  editContent(content: string): Either<InvalidQuoteContentError, Quote> {
+    const contentOrError: Either<InvalidQuoteContentError, Content> =
+      Content.create(content);
+    if (contentOrError.isLeft()) return left(contentOrError.value);
+
+    this._content = contentOrError.value;
+
+    return right(this);
   }
 }
