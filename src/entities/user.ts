@@ -1,12 +1,10 @@
 import { Either, left, right } from '../shared';
 import {
-  DifferentAuthorError,
   InvalidEmailError,
   InvalidNameError,
   InvalidPasswordError,
-  InvalidQuoteContentError,
 } from './errors';
-import { Email, Name, Password, Quote, UserProfile } from '../entities';
+import { Email, Name, Password, UserProfile } from '../entities';
 
 type CreateUserData = {
   name: string;
@@ -31,6 +29,10 @@ export class User {
 
   get name() {
     return this._name;
+  }
+
+  get email() {
+    return this._email;
   }
 
   static create(
