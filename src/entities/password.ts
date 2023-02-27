@@ -2,7 +2,7 @@ import { Either, left, right } from '../shared';
 import { InvalidNameError, InvalidPasswordError } from './errors';
 
 export class Password {
-  private readonly password: string;
+  private password: string;
   private constructor(password: string) {
     this.password = password;
   }
@@ -16,6 +16,10 @@ export class Password {
 
   get value(): string {
     return this.password;
+  }
+
+  set value(password: string) {
+    this.value = password;
   }
 
   static validate(password: string): boolean {
