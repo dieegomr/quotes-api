@@ -4,3 +4,4 @@ export * from './password';
 export * from './profile';
 export * from './email';
 export * from './quote';
+export * from './content';
