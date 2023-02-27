@@ -1,7 +1,6 @@
-import { User } from '.';
 import { Either, left, right } from '../shared';
-import { Content } from './content';
-import { InvalidQuoteContentError } from './errors';
+import { Content, User } from '../entities';
+import { DifferentAuthorError, InvalidQuoteContentError } from './errors';
 
 export class Quote {
   private constructor(
@@ -30,7 +29,12 @@ export class Quote {
     return right(new Quote(contentObj, usersWhoLiked, author));
   }
 
-  editContent(content: string): Either<InvalidQuoteContentError, Quote> {
+  editContent(
+    content: string,
+    user: User
+  ): Either<InvalidQuoteContentError | DifferentAuthorError, Quote> {
+    if (user.name !== this.author.name) return left(new DifferentAuthorError());
+
     const contentOrError: Either<InvalidQuoteContentError, Content> =
       Content.create(content);
     if (contentOrError.isLeft()) return left(contentOrError.value);
@@ -40,7 +44,7 @@ export class Quote {
     return right(this);
   }
 
-  canBeDeleted(currentUserId: string): boolean {
-    return currentUserId === this._author.id ? true : false;
+  canBeDeleted(currentAccountName: string): boolean {
+    return currentAccountName === this._author.name.value ? true : false;
   }
 }
