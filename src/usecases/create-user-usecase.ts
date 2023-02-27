@@ -21,8 +21,10 @@ export class CreateUserUseCase {
 
     userOrError.value.password.value = hashedPassword;
 
-    const newUser = await this.userRepository.create(userOrError.value);
+    const newUserOrError = await this.userRepository.create(userOrError.value);
 
-    return right(newUser);
+    if (newUserOrError.isLeft()) return left(newUserOrError.value);
+
+    return right(newUserOrError.value);
   }
 }
