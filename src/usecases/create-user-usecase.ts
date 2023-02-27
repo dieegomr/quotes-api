@@ -1,7 +1,7 @@
 import { User } from '../entities';
 import { PasswordHashing, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
-import { CreateUserInputDto, CreateUserOutputDto } from '../usercases';
+import { CreateUserInputDto, CreateUserOutputDto } from '.';
 import { CreateUserErrors } from './errors';
 
 export class CreateUserUseCase {
