@@ -23,10 +23,6 @@ export class User {
     return this._password;
   }
 
-  set password(value: Password) {
-    this._password = value;
-  }
-
   get name() {
     return this._name;
   }
