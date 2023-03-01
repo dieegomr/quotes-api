@@ -1,8 +1,8 @@
 import { User } from '../entities';
-import { PasswordHashing, UserRepository } from '../gateways';
+import { CreateUserModel, PasswordHashing, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
-import { CreateUserInputDto, CreateUserOutputDto } from '.';
-import { CreateUserErrors } from './errors';
+import { CreateUserInputDto, CreateUserOutputDto } from '../usecases';
+import { CreateUserErrors, UserExistsError } from './errors';
 
 export class CreateUserUseCase {
   constructor(
@@ -12,6 +12,9 @@ export class CreateUserUseCase {
   async execute(
     input: CreateUserInputDto
   ): Promise<Either<CreateUserErrors, CreateUserOutputDto>> {
+    const userExist = await this.userRepository.findByEmail(input.email);
+    if (userExist) return left(new UserExistsError());
+
     const userOrError = User.create(input);
     if (userOrError.isLeft()) return left(userOrError.value);
 
@@ -19,12 +22,22 @@ export class CreateUserUseCase {
       userOrError.value.password.value
     );
 
-    userOrError.value.password.value = hashedPassword;
+    const newUser: CreateUserModel = {
+      email: userOrError.value.email.value,
+      name: userOrError.value.name.value,
+      password: hashedPassword,
+    };
 
-    const newUserOrError = await this.userRepository.create(userOrError.value);
+    const newUserOrError = await this.userRepository.create(newUser);
 
     if (newUserOrError.isLeft()) return left(newUserOrError.value);
 
-    return right(newUserOrError.value);
+    const userOutputDto: CreateUserOutputDto = {
+      id: newUserOrError.value.id,
+      name: newUserOrError.value.name,
+      email: newUserOrError.value.email,
+    };
+
+    return right(userOutputDto);
   }
 }

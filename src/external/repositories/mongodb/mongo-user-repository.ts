@@ -1,11 +1,12 @@
-import { User } from '../../../entities';
-import { UserRepository, UserViewModel } from '../../../gateways';
+import { UserRepository, UserModel, CreateUserModel } from '../../../gateways';
 import { Either, left, right } from '../../../shared';
 import { MongoClient } from '../../database/mongo';
 import { PersistUserError } from './errors/persist-error';
 
 export class MongoUserRepository implements UserRepository {
-  async create(user: User): Promise<Either<PersistUserError, UserViewModel>> {
+  async create(
+    user: CreateUserModel
+  ): Promise<Either<PersistUserError, UserModel>> {
     const userToInsert = {
       name: user.name,
       email: user.email,
@@ -17,15 +18,23 @@ export class MongoUserRepository implements UserRepository {
       .insertOne(userToInsert);
 
     const newUser = await MongoClient.db
-      .collection<UserViewModel>('users')
+      .collection<UserModel>('users')
       .findOne({ _id: insertedId });
 
     if (!newUser) {
       return left(new PersistUserError());
     }
 
-    const { _id, email, name } = newUser;
+    const { _id, email, name, password } = newUser;
 
-    return right({ id: _id.toHexString(), name, email });
+    return right({ id: _id.toHexString(), name, email, password });
+  }
+
+  async findByEmail(email: string): Promise<UserModel | null> {
+    const user = await MongoClient.db
+      .collection<UserModel>('users')
+      .findOne({ email: email });
+
+    return user;
   }
 }
