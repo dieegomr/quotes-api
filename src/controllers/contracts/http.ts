@@ -17,9 +17,9 @@ export const ok = (data: any): HttpResponse => ({
   data: data,
 });
 
-export const unnauthorized = (data: any): HttpResponse => ({
+export const unnauthorized = (error: Error): HttpResponse => ({
   statusCode: 401,
-  data: data,
+  data: error.message,
 });
 
 export const serverError = (): HttpResponse => ({
