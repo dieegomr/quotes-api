@@ -7,4 +7,11 @@ export class BcryptRepository implements PasswordHashing {
     const hashedPassword = await bcrypt.hash(password, BCRYPT_SALT);
     return hashedPassword;
   }
+
+  async compare(
+    typedPassword: string,
+    hashedPassword: string
+  ): Promise<boolean> {
+    return await bcrypt.compare(typedPassword, hashedPassword);
+  }
 }
