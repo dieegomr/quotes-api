@@ -1,5 +1,6 @@
 import { LoginUseCase } from '../usecases';
 import {
+  badRequest,
   HttpRequest,
   HttpResponse,
   ok,
@@ -7,7 +8,7 @@ import {
   unnauthorized,
 } from './contracts';
 import { Controller } from './contracts/controller';
-import { LoggedUserViewModel } from './contracts/logged-user';
+import { MissingParameterError } from './errors';
 
 export class LoginController implements Controller {
   constructor(private readonly login: LoginUseCase) {}
@@ -15,12 +16,16 @@ export class LoginController implements Controller {
     try {
       const { email, password } = httpRequest.body;
 
-      const loggedUserOrError = await this.login.execute({ email, password });
-      if (loggedUserOrError.isLeft())
-        return unnauthorized(loggedUserOrError.value);
-      const loggedUser: LoggedUserViewModel = loggedUserOrError.value;
+      if (!email || !password) return badRequest(new MissingParameterError());
 
-      return ok(loggedUser);
+      const loginDto = { email, password };
+
+      const output = await this.login.execute(loginDto);
+      if (output.isLeft()) {
+        return unnauthorized(output.value);
+      }
+
+      return ok(output.value);
     } catch (error) {
       return serverError();
     }
