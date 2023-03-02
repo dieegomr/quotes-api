@@ -51,6 +51,13 @@ export class MongoUserRepository implements UserRepository {
       .collection<UserModel>('users')
       .findOne({ email: email });
 
-    return user;
+    if (!user) return null;
+
+    return {
+      id: user._id.toHexString(),
+      email: user.email,
+      name: user.name,
+      password: user.password,
+    };
   }
 }
