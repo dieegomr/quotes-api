@@ -1,7 +1,7 @@
 import { PasswordHashing, TokenGenerator, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
 import { LoginInputDto } from '.';
-import { LoginError, UserNotExistError } from './errors';
+import { LoginError } from './errors';
 import { LoginOutputDto } from './login-dto';
 
 export class LoginUseCase {
@@ -12,11 +12,11 @@ export class LoginUseCase {
   ) {}
   async execute(
     input: LoginInputDto
-  ): Promise<Either<LoginError | UserNotExistError, LoginOutputDto>> {
+  ): Promise<Either<LoginError, LoginOutputDto>> {
     const { email, password } = input;
 
     const user = await this.userRepository.findByEmail(email);
-    if (!user) return left(new UserNotExistError());
+    if (!user) return left(new LoginError());
 
     const isPasswordCorrect = await this.passwordHashing.compare(
       password,
@@ -26,6 +26,15 @@ export class LoginUseCase {
 
     const token = await this.tokenGenerator.sign(user.id);
 
-    return right({ ...user, token });
+    const { password: _, ...userWithoutPassword } = user;
+
+    const loginOutputDto: LoginOutputDto = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      token,
+    };
+
+    return right(loginOutputDto);
   }
 }
