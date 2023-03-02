@@ -17,6 +17,11 @@ export const ok = (data: any): HttpResponse => ({
   data: data,
 });
 
+export const unnauthorized = (data: any): HttpResponse => ({
+  statusCode: 401,
+  data: data,
+});
+
 export const serverError = (): HttpResponse => ({
   statusCode: 500,
   data: 'Something went wrong',
