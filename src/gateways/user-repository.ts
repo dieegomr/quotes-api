@@ -5,4 +5,5 @@ import { CreateUserModel, UserModel } from '../gateways';
 export interface UserRepository {
   create(user: CreateUserModel): Promise<Either<PersistUserError, UserModel>>;
   findByEmail(email: string): Promise<UserModel | null>;
+  findById(id: string): Promise<UserModel | null>;
 }

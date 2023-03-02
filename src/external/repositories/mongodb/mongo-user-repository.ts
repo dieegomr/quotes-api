@@ -1,9 +1,25 @@
+import { ObjectId } from 'mongodb';
 import { UserRepository, UserModel, CreateUserModel } from '../../../gateways';
 import { Either, left, right } from '../../../shared';
 import { MongoClient } from '../../database/mongo';
 import { PersistUserError } from './errors/persist-error';
 
 export class MongoUserRepository implements UserRepository {
+  async findById(id: string): Promise<UserModel | null> {
+    const user = await MongoClient.db
+      .collection<UserModel>('users')
+      .findOne({ _id: new ObjectId(id) });
+
+    if (!user) return null;
+
+    return {
+      id: user._id.toHexString(),
+      email: user.email,
+      name: user.name,
+      password: user.password,
+    };
+  }
+
   async create(
     user: CreateUserModel
   ): Promise<Either<PersistUserError, UserModel>> {
