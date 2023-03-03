@@ -1,3 +1,5 @@
+import { UserModel } from '../../gateways';
+
 export type HttpResponse = {
   statusCode: number;
   data: any;
@@ -5,6 +7,7 @@ export type HttpResponse = {
 
 export type HttpRequest<T = any> = {
   body: T;
+  user: UserModel;
 };
 
 export const badRequest = (error: Error): HttpResponse => ({
