@@ -1,15 +1,10 @@
-import { UserRepository } from '../gateways';
-import { UserNotLoggedInError } from '../middlewares/errors';
-import { Either, left, right } from '../shared';
-import { UserProfileOutputDto } from '.';
+import { UserModel, UserRepository } from '../gateways';
+import { UserProfileOutputDto } from '../usecases';
 
 export class GetUserProfileUseCase {
   constructor(private readonly userRepository: UserRepository) {}
-  async execute(
-    userId: string
-  ): Promise<Either<UserNotLoggedInError, UserProfileOutputDto>> {
-    const user = await this.userRepository.findById(userId);
-    if (!user) return left(new UserNotLoggedInError());
+  async execute(userId: string): Promise<UserProfileOutputDto | null> {
+    const user = (await this.userRepository.findById(userId)) as UserModel;
 
     const userProfileDto: UserProfileOutputDto = {
       id: user.id,
@@ -17,6 +12,6 @@ export class GetUserProfileUseCase {
       name: user.name,
     };
 
-    return right(userProfileDto);
+    return userProfileDto;
   }
 }
