@@ -1,10 +1,9 @@
-import { Express, Router } from 'express';
-import { readdirSync } from 'fs';
+import { Express } from 'express';
+import userRouter from '../routes/userRouter';
 
 export const setupRoutes = (app: Express): void => {
-  const router = Router();
-  app.use('/api/v1', router);
-  readdirSync(`${__dirname}/../routes`).map(async (fileName) => {
-    (await import(`../routes/${fileName}`)).default(router);
+  app.use('/api/v1/user', userRouter);
+  app.all('*', async (req, res) => {
+    res.status(404).json(`Can't find ${req.originalUrl} on this server`);
   });
 };
