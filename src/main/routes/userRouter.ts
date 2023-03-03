@@ -2,11 +2,13 @@ import express from 'express';
 import { LoginController } from '../../controllers';
 
 import { CreateUserController } from '../../controllers/create-user-controller';
+import { GetUserProfileController } from '../../controllers/get-user-profile-controller';
 import { BcryptRepository } from '../../external/repositories/bcrypt/bcrypt-repository';
 import { JwtRepository } from '../../external/repositories/jwt/jwt-repository';
 import { MongoUserRepository } from '../../external/repositories/mongodb/mongo-user-repository';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { CreateUserUseCase, LoginUseCase } from '../../usecases';
+import { GetUserProfileUseCase } from '../../usecases/get-user-profile-usecase';
 
 const userRouter = express.Router();
 
@@ -21,7 +23,6 @@ userRouter.post('/', async (req, res) => {
 });
 
 userRouter.post('/login', async (req, res) => {
-  console.log('aqui');
   const passwordHashing = new BcryptRepository();
   const userRepository = new MongoUserRepository();
   const jwt = new JwtRepository();
@@ -34,8 +35,12 @@ userRouter.post('/login', async (req, res) => {
 
 userRouter.use(authMiddleware(new MongoUserRepository(), new JwtRepository()));
 
-userRouter.get('/test', async (req, res) => {
-  res.status(200).json('test my brother');
+userRouter.get('/profile', async (req, res) => {
+  const userRepository = new MongoUserRepository();
+  const getUserProfile = new GetUserProfileUseCase(userRepository);
+  const controller = new GetUserProfileController(getUserProfile);
+  const response = await controller.handle(req);
+  res.status(response.statusCode).json(response.data);
 });
 
 export default userRouter;
