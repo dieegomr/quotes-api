@@ -15,7 +15,11 @@ export function authMiddleware(
     }
 
     if (!token) {
-      return res.status(400).json('No token');
+      return res
+        .status(400)
+        .json(
+          'You are not authorized to access this information, please log in to have access'
+        );
     }
 
     const decodedJwt = await tokenGenerator.verify(token);
