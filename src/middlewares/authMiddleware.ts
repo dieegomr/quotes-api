@@ -27,7 +27,11 @@ export function authMiddleware(
     const user = await userRepository.findById(decodedJwt.id);
 
     if (!user) {
-      return res.status(400).json('User not found');
+      return res
+        .status(400)
+        .json(
+          'You are not authorized to access this information, please log in to have access'
+        );
     }
 
     req.user = user;
