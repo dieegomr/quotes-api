@@ -2,12 +2,14 @@ import express from 'express';
 import { LoginController } from '../../controllers';
 
 import { CreateUserController } from '../../controllers/create-user-controller';
+import { DeleteUserController } from '../../controllers/delete-user-controller';
 import { GetUserProfileController } from '../../controllers/get-user-profile-controller';
 import { BcryptRepository } from '../../external/repositories/bcrypt/bcrypt-repository';
 import { JwtRepository } from '../../external/repositories/jwt/jwt-repository';
 import { MongoUserRepository } from '../../external/repositories/mongodb/mongo-user-repository';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { CreateUserUseCase, LoginUseCase } from '../../usecases';
+import { DeleteUserUseCase } from '../../usecases/delete-user-usecase';
 import { GetUserProfileUseCase } from '../../usecases/get-user-profile-usecase';
 
 const userRouter = express.Router();
@@ -39,6 +41,14 @@ userRouter.get('/profile', async (req, res) => {
   const userRepository = new MongoUserRepository();
   const getUserProfile = new GetUserProfileUseCase(userRepository);
   const controller = new GetUserProfileController(getUserProfile);
+  const response = await controller.handle(req);
+  res.status(response.statusCode).json(response.data);
+});
+
+userRouter.delete('/', async (req, res) => {
+  const userRepository = new MongoUserRepository();
+  const deleteUser = new DeleteUserUseCase(userRepository);
+  const controller = new DeleteUserController(deleteUser);
   const response = await controller.handle(req);
   res.status(response.statusCode).json(response.data);
 });
