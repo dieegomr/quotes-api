@@ -12,9 +12,9 @@ import { CreateUserUseCase, LoginUseCase } from '../../usecases';
 import { DeleteUserUseCase } from '../../usecases/delete-user-usecase';
 import { GetUserProfileUseCase } from '../../usecases/get-user-profile-usecase';
 
-const userRouter = express.Router();
+const route = express.Router();
 
-userRouter.post('/', async (req, res) => {
+route.post('/', async (req, res) => {
   const passwordHashing = new BcryptRepository();
   const repo = new MongoUserRepository();
   const createUser = new CreateUserUseCase(repo, passwordHashing);
@@ -24,7 +24,7 @@ userRouter.post('/', async (req, res) => {
   res.status(response.statusCode).json(response.data);
 });
 
-userRouter.post('/login', async (req, res) => {
+route.post('/login', async (req, res) => {
   const passwordHashing = new BcryptRepository();
   const userRepository = new MongoUserRepository();
   const jwt = new JwtRepository();
@@ -35,9 +35,9 @@ userRouter.post('/login', async (req, res) => {
   res.status(response.statusCode).json(response.data);
 });
 
-userRouter.use(authMiddleware(new MongoUserRepository(), new JwtRepository()));
+route.use(authMiddleware(new MongoUserRepository(), new JwtRepository()));
 
-userRouter.get('/profile', async (req, res) => {
+route.get('/profile', async (req, res) => {
   const userRepository = new MongoUserRepository();
   const getUserProfile = new GetUserProfileUseCase(userRepository);
   const controller = new GetUserProfileController(getUserProfile);
@@ -45,7 +45,7 @@ userRouter.get('/profile', async (req, res) => {
   res.status(response.statusCode).json(response.data);
 });
 
-userRouter.delete('/', async (req, res) => {
+route.delete('/', async (req, res) => {
   const userRepository = new MongoUserRepository();
   const deleteUser = new DeleteUserUseCase(userRepository);
   const controller = new DeleteUserController(deleteUser);
@@ -53,4 +53,4 @@ userRouter.delete('/', async (req, res) => {
   res.status(response.statusCode).json(response.data);
 });
 
-export default userRouter;
+export default route;
