@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { UserRepository, UserModel, CreateUserModel } from '../../../gateways';
 import { Either, left, right } from '../../../shared';
 import { MongoClient } from '../../database/mongo';
-import { PersistUserError } from './errors/persist-error';
+import { DeleteUserError, PersistUserError } from './errors';
 
 export class MongoUserRepository implements UserRepository {
   async findById(id: string): Promise<UserModel | null> {
@@ -59,5 +59,15 @@ export class MongoUserRepository implements UserRepository {
       name: user.name,
       password: user.password,
     };
+  }
+
+  async delete(id: string): Promise<Either<DeleteUserError, string>> {
+    const { deletedCount } = await MongoClient.db
+      .collection('users')
+      .deleteOne({ _id: new ObjectId(id) });
+
+    if (!deletedCount) return left(new DeleteUserError());
+
+    return right('Successfully deleted user');
   }
 }
