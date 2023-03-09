@@ -13,11 +13,6 @@ type CreateUserData = {
   email: string;
 };
 
-type EditUserData = {
-  name: string;
-  password: string;
-};
-
 export class User {
   private constructor(
     private _id: string,
@@ -79,10 +74,11 @@ export class User {
   }
 
   editPassword(newPassword: string): Either<InvalidPasswordError, User> {
-    const passwordOrError: Either<InvalidPasswordError, Password> =
-      Password.create(newPassword);
+    const passwordOrError: Either<InvalidPasswordError, string> =
+      Password.validate(newPassword);
     if (passwordOrError.isLeft()) return left(passwordOrError.value);
-    this._password = passwordOrError.value;
+
+    this._password = new Password(newPassword);
 
     return right(this);
   }
