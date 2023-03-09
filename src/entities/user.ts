@@ -7,13 +7,20 @@ import {
 import { Email, Name, Password, UserProfile } from '../entities';
 
 type CreateUserData = {
+  id: string;
   name: string;
   password: string;
   email: string;
 };
 
+type EditUserData = {
+  name: string;
+  password: string;
+};
+
 export class User {
   private constructor(
+    private _id: string,
     private _name: Name,
     private _password: Password,
     private _email: Email
@@ -27,6 +34,10 @@ export class User {
     return this._name;
   }
 
+  get id() {
+    return this._id;
+  }
+
   get email() {
     return this._email;
   }
@@ -34,7 +45,7 @@ export class User {
   static create(
     createUserData: CreateUserData
   ): Either<InvalidNameError | InvalidEmailError | InvalidPasswordError, User> {
-    const { name, password, email } = createUserData;
+    const { name, password, email, id } = createUserData;
 
     const nameOrError: Either<InvalidNameError, Name> = Name.create(name);
     if (nameOrError.isLeft()) return left(nameOrError.value);
@@ -44,20 +55,25 @@ export class User {
     if (emailOrError.isLeft()) return left(emailOrError.value);
     const emailObj: Email = emailOrError.value;
 
-    const passwordOrError: Either<InvalidPasswordError, Password> =
-      Password.create(password);
-    if (passwordOrError.isLeft()) return left(passwordOrError.value);
-    const passwordObj: Password = passwordOrError.value;
+    const passwordObj: Password = new Password(password);
 
-    const newUser = new User(nameObj, passwordObj, emailObj);
+    const newUser = new User(id, nameObj, passwordObj, emailObj);
 
     return right(newUser);
   }
 
-  editName(newName: string): Either<InvalidNameError, User> {
+  editUser(
+    newName: string,
+    newEmail: string
+  ): Either<InvalidNameError | InvalidEmailError, User> {
     const nameOrerror: Either<InvalidNameError, Name> = Name.create(newName);
     if (nameOrerror.isLeft()) return left(nameOrerror.value);
     this._name = nameOrerror.value;
+
+    const emailOrError: Either<InvalidEmailError, Email> =
+      Email.create(newEmail);
+    if (emailOrError.isLeft()) return left(emailOrError.value);
+    this._email = emailOrError.value;
 
     return right(this);
   }
@@ -71,22 +87,12 @@ export class User {
     return right(this);
   }
 
-  editEmail(newEmail: string): Either<InvalidEmailError, User> {
-    const emailOrError: Either<InvalidEmailError, Email> =
-      Email.create(newEmail);
-    if (emailOrError.isLeft()) return left(emailOrError.value);
-    this._email = emailOrError.value;
-
-    return right(this);
-  }
-
   getProfileInfo(): UserProfile {
-    const userProfile = {
+    return {
+      id: this._id,
       name: this._name.value,
       email: this._email.value,
     };
-
-    return userProfile;
   }
 
   canIDeleteCurentAccount(currentAccountName: string): boolean {
