@@ -1,4 +1,4 @@
-import { User } from '../entities';
+import { Email, Name, Password, User } from '../entities';
 import { CreateUserModel, PasswordHashing, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
 import { CreateUserInputDto, CreateUserOutputDto } from '../usecases';
@@ -15,16 +15,23 @@ export class CreateUserUseCase {
     const userExist = await this.userRepository.findByEmail(input.email);
     if (userExist) return left(new UserExistsError());
 
-    const userOrError = User.create(input);
-    if (userOrError.isLeft()) return left(userOrError.value);
+    const nameOrError = Name.create(input.name);
+    if (nameOrError.isLeft()) return left(nameOrError.value);
+    const name: Name = nameOrError.value;
 
+    const emailOrError = Email.create(input.email);
+    if (emailOrError.isLeft()) return left(emailOrError.value);
+    const email: Email = emailOrError.value;
+
+    const passwordOrError = Password.validate(input.password);
+    if (passwordOrError.isLeft()) return left(passwordOrError.value);
     const hashedPassword = await this.passwordHashing.hash(
-      userOrError.value.password.value
+      passwordOrError.value
     );
 
     const newUser: CreateUserModel = {
-      email: userOrError.value.email.value,
-      name: userOrError.value.name.value,
+      email: email.value,
+      name: name.value,
       password: hashedPassword,
     };
 
