@@ -1,10 +1,11 @@
 import { PasswordHashing, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
-import { UserNotExistError } from './errors';
+import { LoginError, UserNotExistError } from './errors';
 
 type EditPasswordInputDto = {
   userId: string;
   newPassword: string;
+  currentPassword: string;
 };
 
 export class EditPasswordUseCase {
@@ -19,6 +20,9 @@ export class EditPasswordUseCase {
       editPasswordInputDto.userId
     );
     if (!user) return left(new UserNotExistError());
+
+    if (user.password.value !== editPasswordInputDto.currentPassword)
+      return left(new LoginError());
 
     const userOrError = user.editPassword(editPasswordInputDto.newPassword);
     if (userOrError.isLeft()) return left(userOrError.value);
