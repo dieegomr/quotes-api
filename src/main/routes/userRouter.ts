@@ -8,21 +8,17 @@ import { JwtRepository } from '../../external/repositories/jwt/jwt-repository';
 import { MongoUserRepository } from '../../external/repositories/mongodb/mongo-user-repository';
 import { authMiddleware } from '../../middlewares/authMiddleware';
 import { EditUserUseCase, LoginUseCase } from '../../usecases';
-import { DeleteUserUseCase } from '../../usecases/delete-user-usecase';
 import { EditPasswordUseCase } from '../../usecases/edit-password-usercase';
 import { GetUserProfileUseCase } from '../../usecases/get-user-profile-usecase';
 import { makeCreateUserController } from '../factories';
+import { adptRoute } from '../adpaters';
 
 import express from 'express';
+import { makeDeleteUserController } from '../factories/delelete-user-controller';
 
 const route = express.Router();
 
-route.post('/', async (req, res) => {
-  const controller = makeCreateUserController();
-  const response = await controller.handle(req);
-
-  res.status(response.statusCode).json(response.data);
-});
+route.post('/', adptRoute(makeCreateUserController()));
 
 route.post('/login', async (req, res) => {
   const passwordHashing = new BcryptRepository();
@@ -45,13 +41,7 @@ route.get('/profile', async (req, res) => {
   res.status(response.statusCode).json(response.data);
 });
 
-route.delete('/', async (req, res) => {
-  const userRepository = new MongoUserRepository();
-  const deleteUser = new DeleteUserUseCase(userRepository);
-  const controller = new DeleteUserController(deleteUser);
-  const response = await controller.handle(req);
-  res.status(response.statusCode).json(response.data);
-});
+route.delete('/', adptRoute(makeDeleteUserController()));
 
 route.patch('/updateMe', async (req, res) => {
   const userRepository = new MongoUserRepository();
