@@ -1,5 +1,3 @@
-import { LoginController } from '../../controllers';
-import { DeleteUserController } from '../../controllers/delete-user-controller';
 import { EditPasswordController } from '../../controllers/edit-password-controller';
 import { EditUserController } from '../../controllers/edit-user-controller';
 import { GetUserProfileController } from '../../controllers/get-user-profile-controller';
@@ -7,10 +5,10 @@ import { BcryptRepository } from '../../external/repositories/bcrypt/bcrypt-repo
 import { JwtRepository } from '../../external/repositories/jwt/jwt-repository';
 import { MongoUserRepository } from '../../external/repositories/mongodb/mongo-user-repository';
 import { authMiddleware } from '../../middlewares/authMiddleware';
-import { EditUserUseCase, LoginUseCase } from '../../usecases';
+import { EditUserUseCase } from '../../usecases';
 import { EditPasswordUseCase } from '../../usecases/edit-password-usercase';
 import { GetUserProfileUseCase } from '../../usecases/get-user-profile-usecase';
-import { makeCreateUserController } from '../factories';
+import { makeCreateUserController, makeLoginController } from '../factories';
 import { adptRoute } from '../adpaters';
 
 import express from 'express';
@@ -20,16 +18,7 @@ const route = express.Router();
 
 route.post('/', adptRoute(makeCreateUserController()));
 
-route.post('/login', async (req, res) => {
-  const passwordHashing = new BcryptRepository();
-  const userRepository = new MongoUserRepository();
-  const jwt = new JwtRepository();
-  const loginUseCase = new LoginUseCase(userRepository, passwordHashing, jwt);
-  const controller = new LoginController(loginUseCase);
-  const response = await controller.handle(req);
-
-  res.status(response.statusCode).json(response.data);
-});
+route.post('/login', adptRoute(makeLoginController()));
 
 route.use(authMiddleware(new MongoUserRepository(), new JwtRepository()));
 
