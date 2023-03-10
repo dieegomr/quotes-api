@@ -1,5 +1,5 @@
-export class PersistUserError extends Error {
+export class PersistDataError extends Error {
   constructor() {
-    super('It was not possible to save the user on database');
+    super('It was not possible to save the data on database');
   }
 }
