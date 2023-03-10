@@ -1,12 +1,7 @@
 import { PasswordHashing, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
+import { EditPasswordInputDto } from './dtos';
 import { LoginError, UserNotExistError } from './errors';
-
-type EditPasswordInputDto = {
-  userId: string;
-  newPassword: string;
-  currentPassword: string;
-};
 
 export class EditPasswordUseCase {
   constructor(
