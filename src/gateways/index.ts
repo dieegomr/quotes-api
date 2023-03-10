@@ -4,3 +4,4 @@ export * from './user-model';
 export * from './create-user-model';
 export * from './edit-user-model';
 export * from './token-generator';
+export * from './quote-repository';

@@ -5,12 +5,20 @@ import { DifferentAuthorError, InvalidQuoteContentError } from './errors';
 export class Quote {
   private constructor(
     private _content: Content,
-    usersWhoLiked: string[],
+    private _usersWhoLiked: string[],
     private _author: User
   ) {}
 
   get author() {
     return this._author;
+  }
+
+  get content() {
+    return this._content;
+  }
+
+  get usersWhoLiked() {
+    return this._usersWhoLiked;
   }
 
   static create(
