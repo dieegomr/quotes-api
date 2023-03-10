@@ -1,3 +1,3 @@
-import { CreateUserInputDto } from '../../usecases';
+import { CreateUserInputDto } from '../../usecases/dtos';
 
 export type CreateUserRequest = CreateUserInputDto;

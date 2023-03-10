@@ -1,8 +1,7 @@
 import { PasswordHashing, TokenGenerator, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
-import { LoginInputDto } from '.';
 import { LoginError } from './errors';
-import { LoginOutputDto } from './dtos/login-dto';
+import { LoginInputDto, LoginOutputDto } from './dtos';
 
 export class LoginUseCase {
   constructor(
