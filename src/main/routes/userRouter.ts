@@ -3,6 +3,7 @@ import { LoginController } from '../../controllers';
 
 import { CreateUserController } from '../../controllers/create-user-controller';
 import { DeleteUserController } from '../../controllers/delete-user-controller';
+import { EditPasswordController } from '../../controllers/edit-password-controller';
 import { EditUserController } from '../../controllers/edit-user-controller';
 import { GetUserProfileController } from '../../controllers/get-user-profile-controller';
 import { BcryptRepository } from '../../external/repositories/bcrypt/bcrypt-repository';
@@ -15,6 +16,7 @@ import {
   LoginUseCase,
 } from '../../usecases';
 import { DeleteUserUseCase } from '../../usecases/delete-user-usecase';
+import { EditPasswordUseCase } from '../../usecases/edit-password-usercase';
 import { GetUserProfileUseCase } from '../../usecases/get-user-profile-usecase';
 
 const route = express.Router();
@@ -62,6 +64,15 @@ route.patch('/updateMe', async (req, res) => {
   const userRepository = new MongoUserRepository();
   const editUser = new EditUserUseCase(userRepository);
   const controller = new EditUserController(editUser);
+  const response = await controller.handle(req);
+  res.status(response.statusCode).json(response.data);
+});
+
+route.patch('/updateMyPassword', async (req, res) => {
+  const userRepository = new MongoUserRepository();
+  const passwordHashing = new BcryptRepository();
+  const editPassword = new EditPasswordUseCase(userRepository, passwordHashing);
+  const controller = new EditPasswordController(editPassword);
   const response = await controller.handle(req);
   res.status(response.statusCode).json(response.data);
 });
