@@ -1,9 +1,11 @@
+import { EditPasswordInputDto } from '../usecases/dtos';
 import { EditPasswordUseCase } from '../usecases/edit-password-usercase';
 import {
   badRequest,
   Controller,
   HttpRequest,
   HttpResponse,
+  ok,
   unnauthorized,
 } from './contracts';
 import {
@@ -24,10 +26,17 @@ export class EditPasswordController implements Controller {
     if (body.newPassword !== body.passwordConfirm)
       return unnauthorized(new PasswordNotMatchError());
 
-    await this.editPassword.execute({
+    const editPasswordInputDto: EditPasswordInputDto = {
       newPassword: body.newPassword,
       userId: user.id,
       currentPassword: user.password.value,
-    });
+    };
+
+    const updatedOrError = await this.editPassword.execute(
+      editPasswordInputDto
+    );
+    if (updatedOrError.isLeft()) return unnauthorized(updatedOrError.value);
+
+    return ok(updatedOrError.value);
   }
 }
