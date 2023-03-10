@@ -4,7 +4,7 @@ import { UserRepository, UserModel, CreateUserModel } from '../../../gateways';
 import { Either, left, right } from '../../../shared';
 import { EditUserInputDto } from '../../../usecases/dtos';
 import { MongoClient } from '../../database/mongo';
-import { DeleteUserError, PersistUserError, UpdateUserError } from './errors';
+import { DeleteUserError, PersistDataError, UpdateUserError } from './errors';
 
 export class MongoUserRepository implements UserRepository {
   async findById(id: string): Promise<User | null> {
@@ -27,7 +27,7 @@ export class MongoUserRepository implements UserRepository {
 
   async create(
     user: CreateUserModel
-  ): Promise<Either<PersistUserError, UserModel>> {
+  ): Promise<Either<PersistDataError, UserModel>> {
     const userToInsert = {
       name: user.name,
       email: user.email,
@@ -43,7 +43,7 @@ export class MongoUserRepository implements UserRepository {
       .findOne({ _id: insertedId });
 
     if (!newUser) {
-      return left(new PersistUserError());
+      return left(new PersistDataError());
     }
 
     const { _id, email, name, password } = newUser;
