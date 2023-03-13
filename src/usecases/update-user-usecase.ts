@@ -2,18 +2,18 @@ import { User } from '../entities';
 import { InvalidEmailError, InvalidNameError } from '../entities/errors';
 import { UserModel, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
-import { EditUserInputDto } from './dtos';
+import { UpdateUserInputDto } from './dtos';
 import {
   EmailAlreadyExistsError,
   NameAlreadyExistsError,
   UserNotExistError,
 } from './errors';
 
-export class EditUserUseCase {
+export class UpdateUserUseCase {
   constructor(private readonly userRepository: UserRepository) {}
   async execute(
     id: string,
-    editUserDto: EditUserInputDto
+    editUserDto: UpdateUserInputDto
   ): Promise<
     Either<
       | UserNotExistError
@@ -50,7 +50,7 @@ export class EditUserUseCase {
     if (userOrError.isLeft()) return left(userOrError.value);
     const userToEdit: User = userOrError.value;
 
-    const editedUser = await this.userRepository.editUser(id, {
+    const editedUser = await this.userRepository.update(id, {
       name: userToEdit.name.value,
       email: userToEdit.email.value,
     });

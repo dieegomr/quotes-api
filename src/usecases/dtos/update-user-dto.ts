@@ -1,9 +1,9 @@
 import { User } from '../../entities';
 
-export type EditUserInputDto = {
+export type UpdateUserInputDto = {
   name?: string;
   email?: string;
   password?: string;
 };
 
-export type EditUserOutputDto = User;
+export type UpdateUserOutputDto = User;

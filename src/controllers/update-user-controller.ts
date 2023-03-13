@@ -1,4 +1,4 @@
-import { EditUserUseCase } from '../usecases';
+import { UpdateUserUseCase } from '../usecases';
 import {
   badRequest,
   Controller,
@@ -10,8 +10,8 @@ import {
 } from './contracts';
 import { AuthError, WrongPasswordRouteError } from './errors';
 
-export class EditUserController implements Controller {
-  constructor(private readonly editUser: EditUserUseCase) {}
+export class UpdateUserController implements Controller {
+  constructor(private readonly updateUser: UpdateUserUseCase) {}
   async handle(httpRequest: HttpRequest): Promise<HttpResponse> {
     try {
       const allowedFieldsToBeUpdated = ['name', 'email'];
@@ -24,7 +24,10 @@ export class EditUserController implements Controller {
 
       const filteredBody = this.filteredBody(body, ...allowedFieldsToBeUpdated);
 
-      const outputOrError = await this.editUser.execute(user.id, filteredBody);
+      const outputOrError = await this.updateUser.execute(
+        user.id,
+        filteredBody
+      );
       if (outputOrError.isLeft()) return badRequest(outputOrError.value);
 
       return ok(outputOrError.value);

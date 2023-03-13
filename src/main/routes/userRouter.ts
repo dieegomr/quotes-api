@@ -4,8 +4,8 @@ import { authMiddleware } from '../../middlewares/authMiddleware';
 import {
   makeCreateUserController,
   makeDeleteUserController,
-  makeEditPasswordController,
-  makeEditUserController,
+  makeUpdatePasswordController,
+  makeUpdateUserController,
   makeGetUserProfileController,
   makeLoginController,
 } from '../factories';
@@ -25,8 +25,8 @@ route.get('/profile', adptRoute(makeGetUserProfileController()));
 
 route.delete('/', adptRoute(makeDeleteUserController()));
 
-route.patch('/updateMe', adptRoute(makeEditUserController()));
+route.patch('/updateMe', adptRoute(makeUpdateUserController()));
 
-route.patch('/updateMyPassword', adptRoute(makeEditPasswordController()));
+route.patch('/updateMyPassword', adptRoute(makeUpdatePasswordController()));
 
 export default route;

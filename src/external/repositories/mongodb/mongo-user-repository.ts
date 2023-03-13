@@ -2,7 +2,7 @@ import { ObjectId } from 'mongodb';
 import { User } from '../../../entities';
 import { UserRepository, UserModel, CreateUserModel } from '../../../gateways';
 import { Either, left, right } from '../../../shared';
-import { EditUserInputDto } from '../../../usecases/dtos';
+import { UpdateUserInputDto } from '../../../usecases/dtos';
 import { MongoClient } from '../../database/mongo';
 import { DeleteUserError, PersistDataError, UpdateUserError } from './errors';
 
@@ -25,28 +25,22 @@ export class MongoUserRepository implements UserRepository {
     return userOrError.value;
   }
 
-  async create(
-    user: CreateUserModel
+  async save(
+    saveUserData: CreateUserModel
   ): Promise<Either<PersistDataError, UserModel>> {
-    const userToInsert = {
-      name: user.name,
-      email: user.email,
-      password: user.password,
-    };
-
     const { insertedId } = await MongoClient.db
       .collection('users')
-      .insertOne(userToInsert);
+      .insertOne(saveUserData);
 
-    const newUser = await MongoClient.db
+    const savedUser = await MongoClient.db
       .collection<UserModel>('users')
       .findOne({ _id: insertedId });
 
-    if (!newUser) {
+    if (!savedUser) {
       return left(new PersistDataError());
     }
 
-    const { _id, email, name, password } = newUser;
+    const { _id, email, name, password } = savedUser;
 
     return right({ id: _id.toHexString(), name, email, password });
   }
@@ -76,9 +70,9 @@ export class MongoUserRepository implements UserRepository {
     return right('Successfully deleted user');
   }
 
-  async editUser(
+  async update(
     id: string,
-    data: EditUserInputDto
+    data: UpdateUserInputDto
   ): Promise<Either<UpdateUserError, Omit<UserModel, 'password'>>> {
     const updatedUser = await MongoClient.db
       .collection<UserModel>('users')

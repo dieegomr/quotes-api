@@ -1,15 +1,15 @@
 import { PasswordHashing, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
-import { EditPasswordInputDto } from './dtos';
+import { UpdatePasswordInputDto } from './dtos';
 import { LoginError, UserNotExistError } from './errors';
 
-export class EditPasswordUseCase {
+export class UpdatePasswordUseCase {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly passwordHasher: PasswordHashing
   ) {}
   async execute(
-    editPasswordInputDto: EditPasswordInputDto
+    editPasswordInputDto: UpdatePasswordInputDto
   ): Promise<Either<Error, string>> {
     const user = await this.userRepository.findById(
       editPasswordInputDto.userId
@@ -26,7 +26,7 @@ export class EditPasswordUseCase {
       userOrError.value.password.value
     );
 
-    const updatedOrError = await this.userRepository.editUser(
+    const updatedOrError = await this.userRepository.update(
       editPasswordInputDto.userId,
       {
         password: hashedPassword,

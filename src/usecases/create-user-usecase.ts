@@ -1,4 +1,4 @@
-import { Email, Name, Password, User } from '../entities';
+import { Email, Name, Password } from '../entities';
 import { CreateUserModel, PasswordHashing, UserRepository } from '../gateways';
 import { Either, left, right } from '../shared';
 import { CreateUserInputDto, CreateUserOutputDto } from './dtos';
@@ -35,7 +35,7 @@ export class CreateUserUseCase {
       password: hashedPassword,
     };
 
-    const newUserOrError = await this.userRepository.create(newUser);
+    const newUserOrError = await this.userRepository.save(newUser);
 
     if (newUserOrError.isLeft()) return left(newUserOrError.value);
 

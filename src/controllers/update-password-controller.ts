@@ -1,5 +1,5 @@
-import { EditPasswordInputDto } from '../usecases/dtos';
-import { EditPasswordUseCase } from '../usecases/edit-password-usercase';
+import { UpdatePasswordInputDto } from '../usecases/dtos';
+import { UpdatePasswordUseCase } from '../usecases/update-password-usercase';
 import {
   badRequest,
   Controller,
@@ -14,8 +14,8 @@ import {
   PasswordNotMatchError,
 } from './errors';
 
-export class EditPasswordController implements Controller {
-  constructor(private readonly editPassword: EditPasswordUseCase) {}
+export class UpdatePasswordController implements Controller {
+  constructor(private readonly updatePassword: UpdatePasswordUseCase) {}
   async handle(httpRequest: HttpRequest<any>): Promise<HttpResponse> {
     const { body, user } = httpRequest;
     if (!user) return badRequest(new AuthError());
@@ -26,13 +26,13 @@ export class EditPasswordController implements Controller {
     if (body.newPassword !== body.passwordConfirm)
       return unnauthorized(new PasswordNotMatchError());
 
-    const editPasswordInputDto: EditPasswordInputDto = {
+    const editPasswordInputDto: UpdatePasswordInputDto = {
       newPassword: body.newPassword,
       userId: user.id,
       currentPassword: user.password.value,
     };
 
-    const updatedOrError = await this.editPassword.execute(
+    const updatedOrError = await this.updatePassword.execute(
       editPasswordInputDto
     );
     if (updatedOrError.isLeft()) return unnauthorized(updatedOrError.value);
