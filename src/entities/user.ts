@@ -96,10 +96,16 @@ export class User {
     return currentAccountName === this.name.value ? true : false;
   }
 
-  createQuote(content: string): Either<InvalidQuoteContentError, Quote> {
-    const quoteOrError = Quote.create(content, this);
+  createQuote(
+    quoteId: string,
+    content: string
+  ): Either<InvalidQuoteContentError, Quote> {
+    const quoteOrError = Quote.create({
+      id: quoteId,
+      content,
+      authorName: this.name.value,
+    });
     if (quoteOrError.isLeft()) return left(new InvalidQuoteContentError());
-
     return right(quoteOrError.value);
   }
 }

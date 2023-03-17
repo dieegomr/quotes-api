@@ -5,8 +5,7 @@ import { DifferentAuthorError, InvalidQuoteContentError } from './errors';
 type CreateQuoteData = {
   id: string;
   content: string;
-  author: string;
-  usersWhoLiked: string[];
+  authorName: string;
 };
 
 export class Quote {
@@ -14,15 +13,15 @@ export class Quote {
     private _id: string,
     private _content: Content,
     private _usersWhoLiked: string[],
-    private _author: string
+    private _authorName: string
   ) {}
 
   get id() {
     return this._id;
   }
 
-  get author() {
-    return this._author;
+  get authorName() {
+    return this._authorName;
   }
 
   get content() {
@@ -50,7 +49,7 @@ export class Quote {
         createQuoteData.id,
         contentObj,
         usersWhoLiked,
-        createQuoteData.author
+        createQuoteData.authorName
       )
     );
   }
@@ -59,7 +58,8 @@ export class Quote {
     content: string,
     user: User
   ): Either<InvalidQuoteContentError | DifferentAuthorError, Quote> {
-    if (user.name !== this.author.name) return left(new DifferentAuthorError());
+    if (user.name.value !== this.authorName)
+      return left(new DifferentAuthorError());
 
     const contentOrError: Either<InvalidQuoteContentError, Content> =
       Content.create(content);
@@ -71,6 +71,6 @@ export class Quote {
   }
 
   canBeDeleted(currentAccountName: string): boolean {
-    return currentAccountName === this._author.name.value ? true : false;
+    return currentAccountName === this.authorName ? true : false;
   }
 }
