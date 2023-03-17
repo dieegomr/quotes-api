@@ -2,7 +2,7 @@ import { User } from '../../entities';
 
 export type CreateQuoteInputDto = {
   content: string;
-  author: User;
+  user: User;
 };
 
 export type CreateQuoteOutputDto = {

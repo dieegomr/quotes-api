@@ -3,8 +3,9 @@ import {
   InvalidEmailError,
   InvalidNameError,
   InvalidPasswordError,
+  InvalidQuoteContentError,
 } from './errors';
-import { Email, Name, Password, UserProfile } from '../entities';
+import { Email, Name, Password, Quote, UserProfile } from '../entities';
 
 type CreateUserData = {
   id: string;
@@ -93,5 +94,12 @@ export class User {
 
   canIDeleteCurentAccount(currentAccountName: string): boolean {
     return currentAccountName === this.name.value ? true : false;
+  }
+
+  createQuote(content: string): Either<InvalidQuoteContentError, Quote> {
+    const quoteOrError = Quote.create(content, this);
+    if (quoteOrError.isLeft()) return left(new InvalidQuoteContentError());
+
+    return right(quoteOrError.value);
   }
 }
