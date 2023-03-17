@@ -2,12 +2,24 @@ import { Either, left, right } from '../shared';
 import { Content, User } from '../entities';
 import { DifferentAuthorError, InvalidQuoteContentError } from './errors';
 
+type CreateQuoteData = {
+  id: string;
+  content: string;
+  author: string;
+  usersWhoLiked: string[];
+};
+
 export class Quote {
   private constructor(
+    private _id: string,
     private _content: Content,
     private _usersWhoLiked: string[],
-    private _author: User
+    private _author: string
   ) {}
+
+  get id() {
+    return this._id;
+  }
 
   get author() {
     return this._author;
@@ -22,11 +34,10 @@ export class Quote {
   }
 
   static create(
-    content: string,
-    author: User
+    createQuoteData: CreateQuoteData
   ): Either<InvalidQuoteContentError, Quote> {
     const contentOrError: Either<InvalidQuoteContentError, Content> =
-      Content.create(content);
+      Content.create(createQuoteData.content);
 
     if (contentOrError.isLeft()) return left(contentOrError.value);
 
@@ -34,7 +45,14 @@ export class Quote {
 
     const usersWhoLiked: string[] = [];
 
-    return right(new Quote(contentObj, usersWhoLiked, author));
+    return right(
+      new Quote(
+        createQuoteData.id,
+        contentObj,
+        usersWhoLiked,
+        createQuoteData.author
+      )
+    );
   }
 
   editContent(
