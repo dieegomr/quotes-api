@@ -1,3 +1,4 @@
+import { Content } from '../entities';
 import { InvalidQuoteContentError } from '../entities/errors';
 import { QuoteRepository } from '../gateways';
 import { Either, left, right } from '../shared';
@@ -8,19 +9,22 @@ export class CreateQuoteUseCase {
   async execute(
     input: CreateQuoteInputDto
   ): Promise<Either<InvalidQuoteContentError, CreateQuoteOutputDto>> {
-    const { user, content } = input;
+    const contentOrError = Content.create(input.content);
+    if (contentOrError.isLeft()) return left(contentOrError.value);
+    const contentObj = contentOrError.value;
 
-    const quoteOrError = user.createQuote(content);
-    if (quoteOrError.isLeft()) return left(quoteOrError.value);
+    const usersWhoLiked: string[] = [];
 
-    const createQuoteOrError = await this.quoteRepository.create(
-      quoteOrError.value
-    );
+    const createQuoteOrError = await this.quoteRepository.create({
+      content: contentObj.value,
+      authorName: input.user.name.value,
+      usersWhoLiked,
+    });
     if (createQuoteOrError.isLeft()) return left(createQuoteOrError.value);
 
     const createQuoteOutputDto: CreateQuoteOutputDto = {
-      author: createQuoteOrError.value.author,
-      content: createQuoteOrError.value.content.value,
+      author: createQuoteOrError.value.authorName,
+      content: createQuoteOrError.value.content,
       usersWhoLiked: createQuoteOrError.value.usersWhoLiked,
     };
 

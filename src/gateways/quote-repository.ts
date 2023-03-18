@@ -1,6 +1,6 @@
-import { Quote } from '../entities';
 import { Either } from '../shared';
+import { CreateQuoteModel, QuoteModel } from '../gateways';
 
 export interface QuoteRepository {
-  create(quote: Quote): Promise<Either<Error, Quote>>;
+  create(createQuoteData: CreateQuoteModel): Promise<Either<Error, QuoteModel>>;
 }

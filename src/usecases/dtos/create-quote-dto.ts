@@ -8,5 +8,5 @@ export type CreateQuoteInputDto = {
 export type CreateQuoteOutputDto = {
   content: string;
   usersWhoLiked: string[];
-  author: User;
+  author: string;
 };
