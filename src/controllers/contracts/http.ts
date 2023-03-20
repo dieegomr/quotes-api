@@ -6,6 +6,7 @@ export type HttpResponse = {
 };
 
 export type HttpRequest<T = any> = {
+  params: any;
   body: T;
   user: User;
 };
