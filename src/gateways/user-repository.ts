@@ -1,7 +1,7 @@
 import { Either } from '../shared';
 import { CreateUserModel, UserModel } from '../gateways';
 import { User } from '../entities';
-import { EditUserInputDto } from '../usecases/dtos';
+import { UpdateUserInputDto } from '../usecases/dtos';
 
 export interface UserRepository {
   save(user: CreateUserModel): Promise<Either<Error, UserModel>>;
@@ -10,6 +10,6 @@ export interface UserRepository {
   delete(id: string): Promise<Either<Error, string>>;
   update(
     id: string,
-    data: EditUserInputDto
+    data: UpdateUserInputDto
   ): Promise<Either<Error, Omit<UserModel, 'password'>>>;
 }
