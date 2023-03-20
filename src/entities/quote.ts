@@ -56,9 +56,9 @@ export class Quote {
 
   editContent(
     content: string,
-    user: User
+    userId: string
   ): Either<InvalidQuoteContentError | DifferentAuthorError, Quote> {
-    if (user.id !== this.authorId) return left(new DifferentAuthorError());
+    if (userId !== this.authorId) return left(new DifferentAuthorError());
 
     const contentOrError: Either<InvalidQuoteContentError, Content> =
       Content.create(content);
