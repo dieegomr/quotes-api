@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import {
   CreateQuoteModel,
   QuoteModel,
@@ -5,7 +6,7 @@ import {
 } from '../../../gateways';
 import { Either, left, right } from '../../../shared';
 import { MongoClient } from '../../database/mongo';
-import { PersistDataError } from './errors';
+import { DeleteQuoteError, PersistDataError } from './errors';
 
 export class MongoQuoteRepository implements QuoteRepository {
   async create(
@@ -26,5 +27,14 @@ export class MongoQuoteRepository implements QuoteRepository {
     const { _id, authorName, content, usersWhoLiked } = createdQuote;
 
     return right({ id: _id.toHexString(), authorName, content, usersWhoLiked });
+  }
+  async delete(quoteId: string): Promise<Either<Error, string>> {
+    const { deletedCount } = await MongoClient.db
+      .collection('quotes')
+      .deleteOne({ _id: new ObjectId(quoteId) });
+
+    if (!deletedCount) return left(new DeleteQuoteError());
+
+    return right('Successfully deleted quote');
   }
 }
