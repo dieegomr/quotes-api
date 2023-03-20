@@ -18,7 +18,7 @@ export class DeleteQuoteController implements Controller {
 
       if (!user) return unnauthorized(new AuthError());
 
-      const outputOrError = await this.deleteQuote.execute(params.id);
+      const outputOrError = await this.deleteQuote.execute(params.id, user.id);
       if (outputOrError.isLeft()) return badRequest(outputOrError.value);
 
       return ok(outputOrError.value);
