@@ -5,3 +5,4 @@ export * from './update-user-usecase';
 export * from './create-quote-usecase';
 export * from './delete-user-usecase';
 export * from './delete-quote-usecase';
+export * from './update-quote-usecase';
