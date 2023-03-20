@@ -5,3 +5,4 @@ export * from './get-user-profile-controller';
 export * from './update-user-controller';
 export * from './update-password-controller';
 export * from './create-quote-controller';
+export * from './get-all-current-user-quotes-controller';
