@@ -6,6 +6,7 @@ export type CreateQuoteInputDto = {
 };
 
 export type CreateQuoteOutputDto = {
+  id: string;
   content: string;
   usersWhoLiked: string[];
   author: string;

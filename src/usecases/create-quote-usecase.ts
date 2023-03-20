@@ -23,6 +23,7 @@ export class CreateQuoteUseCase {
     if (createQuoteOrError.isLeft()) return left(createQuoteOrError.value);
 
     const createQuoteOutputDto: CreateQuoteOutputDto = {
+      id: createQuoteOrError.value.id,
       author: createQuoteOrError.value.authorName,
       content: createQuoteOrError.value.content,
       usersWhoLiked: createQuoteOrError.value.usersWhoLiked,
