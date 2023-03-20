@@ -1,6 +1,6 @@
 export type QuoteModel = {
   id: string;
   content: string;
-  authorName: string;
+  authorId: string;
   usersWhoLiked: string[];
 };

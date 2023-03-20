@@ -101,9 +101,9 @@ export class User {
     content: string
   ): Either<InvalidQuoteContentError, Quote> {
     const quoteOrError = Quote.create({
-      id: quoteId,
+      quoteId: quoteId,
       content,
-      authorName: this.name.value,
+      authorId: this.id,
     });
     if (quoteOrError.isLeft()) return left(new InvalidQuoteContentError());
     return right(quoteOrError.value);

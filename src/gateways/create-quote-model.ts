@@ -1,5 +1,5 @@
 export type CreateQuoteModel = {
   content: string;
-  authorName: string;
+  authorId: string;
   usersWhoLiked: string[];
 };

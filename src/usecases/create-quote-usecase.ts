@@ -17,14 +17,14 @@ export class CreateQuoteUseCase {
 
     const createQuoteOrError = await this.quoteRepository.create({
       content: contentObj.value,
-      authorName: input.user.name.value,
+      authorId: input.user.id,
       usersWhoLiked,
     });
     if (createQuoteOrError.isLeft()) return left(createQuoteOrError.value);
 
     const createQuoteOutputDto: CreateQuoteOutputDto = {
       id: createQuoteOrError.value.id,
-      author: createQuoteOrError.value.authorName,
+      authorId: createQuoteOrError.value.authorId,
       content: createQuoteOrError.value.content,
       usersWhoLiked: createQuoteOrError.value.usersWhoLiked,
     };

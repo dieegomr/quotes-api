@@ -3,9 +3,9 @@ import { Content, User } from '../entities';
 import { DifferentAuthorError, InvalidQuoteContentError } from './errors';
 
 type CreateQuoteData = {
-  id: string;
+  quoteId: string;
   content: string;
-  authorName: string;
+  authorId: string;
 };
 
 export class Quote {
@@ -13,15 +13,15 @@ export class Quote {
     private _id: string,
     private _content: Content,
     private _usersWhoLiked: string[],
-    private _authorName: string
+    private _authorId: string
   ) {}
 
   get id() {
     return this._id;
   }
 
-  get authorName() {
-    return this._authorName;
+  get authorId() {
+    return this._authorId;
   }
 
   get content() {
@@ -46,10 +46,10 @@ export class Quote {
 
     return right(
       new Quote(
-        createQuoteData.id,
+        createQuoteData.quoteId,
         contentObj,
         usersWhoLiked,
-        createQuoteData.authorName
+        createQuoteData.authorId
       )
     );
   }
@@ -58,8 +58,7 @@ export class Quote {
     content: string,
     user: User
   ): Either<InvalidQuoteContentError | DifferentAuthorError, Quote> {
-    if (user.name.value !== this.authorName)
-      return left(new DifferentAuthorError());
+    if (user.id !== this.authorId) return left(new DifferentAuthorError());
 
     const contentOrError: Either<InvalidQuoteContentError, Content> =
       Content.create(content);
@@ -70,7 +69,7 @@ export class Quote {
     return right(this);
   }
 
-  canBeDeleted(currentAccountName: string): boolean {
-    return currentAccountName === this.authorName ? true : false;
+  canBeDeleted(currentUserId: string): boolean {
+    return currentUserId === this.authorId ? true : false;
   }
 }
