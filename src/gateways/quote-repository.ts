@@ -11,4 +11,5 @@ export interface QuoteRepository {
     id: string,
     updateQuoteData: UpdateQuoteInputDto
   ): Promise<Either<Error, QuoteModel>>;
+  findAllByAuthorId(id: string): Promise<QuoteModel[]>;
 }

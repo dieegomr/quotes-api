@@ -80,4 +80,15 @@ export class MongoQuoteRepository implements QuoteRepository {
 
     return right(quote);
   }
+  async findAllByAuthorId(id: string): Promise<QuoteModel[]> {
+    const quotes = await MongoClient.db
+      .collection<Omit<QuoteModel, 'id'>>('quotes')
+      .find({ authorId: id })
+      .toArray();
+
+    return quotes.map(({ _id, ...rest }) => ({
+      ...rest,
+      id: _id.toHexString(),
+    }));
+  }
 }
