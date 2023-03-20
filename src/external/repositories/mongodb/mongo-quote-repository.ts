@@ -6,8 +6,9 @@ import {
   QuoteRepository,
 } from '../../../gateways';
 import { Either, left, right } from '../../../shared';
+import { UpdateQuoteInputDto } from '../../../usecases/dtos';
 import { MongoClient } from '../../database/mongo';
-import { DeleteQuoteError, PersistDataError } from './errors';
+import { DeleteQuoteError, PersistDataError, UpdateQuoteError } from './errors';
 
 export class MongoQuoteRepository implements QuoteRepository {
   async create(
@@ -54,5 +55,29 @@ export class MongoQuoteRepository implements QuoteRepository {
     if (quoteOrError.isLeft()) return null;
 
     return quoteOrError.value;
+  }
+
+  async update(
+    id: string,
+    data: UpdateQuoteInputDto
+  ): Promise<Either<Error, QuoteModel>> {
+    const updatedQuote = await MongoClient.db
+      .collection<QuoteModel>('quotes')
+      .findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: { ...data } },
+        { returnDocument: 'after' }
+      );
+
+    if (!updatedQuote.value) return left(new UpdateQuoteError());
+
+    const quote = {
+      id: updatedQuote.value._id.toHexString(),
+      content: updatedQuote.value.content,
+      usersWhoLiked: updatedQuote.value.usersWhoLiked,
+      authorId: updatedQuote.value.authorId,
+    };
+
+    return right(quote);
   }
 }
